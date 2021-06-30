@@ -14,3 +14,6 @@ Does not support interaction or 3d.
 
 ## Example
 ![simple graphics exaple](img/example.png)
+
+## Documentation
+[Can be found here](https://renetc.github.io/Simple-graphics/)
