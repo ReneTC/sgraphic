@@ -4,8 +4,13 @@ from IPython.display import display
 from PIL import ImageColor # convert hex to rgb
 from PIL import Image # show image in terminal
 
+#pdoc -o ./docs ./main.py --force
 
 class scene:
+    '''
+    A class to represent the scene.
+    '''
+
     def __init__(self,width,height,**kwargs):
         self.width = width
         self.height = height
@@ -24,7 +29,7 @@ with surface as canvas:
 
     def reset(self):
         '''
-        resets all painted objects to initial scene
+        Resets all elements to initial scene.
         '''
         exec(self.code, globals())
 
@@ -33,6 +38,9 @@ with surface as canvas:
         pass
 
 def show(inline=False):
+    '''
+    Shows the scene with all elements drawn.
+    '''
     for draw_objects in scene.draw_elements:
         draw_objects.show()
     snapshot = surface.makeImageSnapshot()
@@ -44,6 +52,9 @@ def show(inline=False):
         display(snapshot)
 
 def save(path):
+    '''
+    Saves the current scene as image.
+    '''
     for draw_objects in scene.draw_elements:
         draw_objects.show()
 
@@ -52,13 +63,13 @@ def save(path):
 
 def get_rgb(hex):
     '''
-        skia only supports R G B values. Get these values from hex code.
+    Get rgb values from HEX string.
     '''
     return ImageColor.getcolor(hex, "RGB")
 
 def get_paint_polygon(color):
     '''
-        returns paint object for polygons (cube, text etc)
+    Returns a skia.paint object for polygons (cube, text etc)
     '''
     rgb = get_rgb(color)
     color = Color=skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
@@ -71,7 +82,7 @@ def get_paint_polygon(color):
 
 def get_paint_path(color,linewidth):
     '''
-        returns paint object for paths (lines etc)
+    Returns skia.paint object for paths (lines etc)
     '''
     rgb = get_rgb(color)
     color = Color=skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
