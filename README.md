@@ -11,3 +11,6 @@ Does not support interaction or 3d.
 ## Comming:
  - Animation support
  - Documentation
+
+## Example
+![simple graphics exaple](img/example.png)
