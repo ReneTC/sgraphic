@@ -1,8 +1,9 @@
 import skia
 import contextlib
 from IPython.display import display
-from PIL import ImageColor # convert hex to rgb
 from PIL import Image # show image in terminal
+
+from .helpers import *
 
 #pdoc -o ./docs ./main.py --force
 
@@ -24,8 +25,8 @@ with surface as canvas:
     canvas.clear(skia.ColorSetRGB('''+str(self.rgb[0])+''','''+str(self.rgb[1])+''', '''+str(self.rgb[2])+'''))'''
 
         self.reset()
-        global scene
-        scene = self
+        global _scene
+        _scene = self
 
     def reset(self):
         '''
@@ -36,12 +37,12 @@ with surface as canvas:
     def draw_objects(self, element):
         self.draw_elements.append(element)
         pass
-
+_scene = scene(1,1)
 def show(inline=False):
     '''
     Shows the scene with all elements drawn.
     '''
-    for draw_objects in scene.draw_elements:
+    for draw_objects in _scene.draw_elements:
         draw_objects.show()
     snapshot = surface.makeImageSnapshot()
 
@@ -55,17 +56,13 @@ def save(path):
     '''
     Saves the current scene as image.
     '''
-    for draw_objects in scene.draw_elements:
+    for draw_objects in _scene.draw_elements:
         draw_objects.show()
 
     snapshot = surface.makeImageSnapshot()
     snapshot.save(path, skia.kPNG)
 
-def get_rgb(hex):
-    '''
-    Get rgb values from HEX string.
-    '''
-    return ImageColor.getcolor(hex, "RGB")
+
 
 def get_paint_polygon(color):
     '''
@@ -102,7 +99,7 @@ class polygon:
         self.y = y
         self.color = kwargs.get('color', '#000000')
         self.paint = get_paint_polygon(self.color)
-        scene.draw_objects(self)
+        _scene.draw_objects(self)
 
     def show(self):
         with surface as canvas:
@@ -142,7 +139,7 @@ class path:
         self.color = kwargs.get('color', '#000000')
         self.linewidth = kwargs.get('linewidth', 4)
         self.paint = get_paint_path(self.color,self.linewidth)
-        scene.draw_objects(self)
+        _scene.draw_objects(self)
 
     def show(self):
         with surface as canvas:
@@ -166,7 +163,7 @@ def animate(frames):
     global frame
     frame = 0
     while frame < frames:
-        scene.reset()
+        _scene.reset()
         animation()
 
         save("test/"+str(frame)+".png")
