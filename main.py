@@ -38,30 +38,38 @@ with surface as canvas:
         self.draw_elements.append(element)
         pass
 _scene = scene(1,1)
+
+def take_screenshot():
+    '''
+    renders all elements to scene
+
+    '''
+    for draw_objects in _scene.draw_elements:
+        draw_objects.show()
+    screenshot = surface.makeImageSnapshot()
+
+    return screenshot
+
 def show(inline=False):
     '''
     Shows the scene with all elements drawn.
     '''
-    for draw_objects in _scene.draw_elements:
-        draw_objects.show()
-    snapshot = surface.makeImageSnapshot()
+    screenshot = take_screenshot()
 
     if inline == False:
-        img = Image.fromarray(snapshot)
+        img = Image.fromarray(screenshot)
         img.show()
     else:
-        display(snapshot)
+        display(screenshot)
 
 def save(path):
     '''
     Saves the current scene as image.
     '''
-    for draw_objects in _scene.draw_elements:
-        draw_objects.show()
 
-    snapshot = surface.makeImageSnapshot()
-    snapshot.save(path, skia.kPNG)
+    screenshot = take_screenshot()
 
+    screenshot.save(path, skia.kPNG)
 
 
 def get_paint_polygon(color):
