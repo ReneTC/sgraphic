@@ -25,8 +25,7 @@ with surface as canvas:
     canvas.clear(skia.ColorSetRGB('''+str(self.rgb[0])+''','''+str(self.rgb[1])+''', '''+str(self.rgb[2])+'''))'''
 
         self.reset()
-        global _scene
-        _scene = self
+        # global _scene
 
     def reset(self):
         '''
@@ -36,15 +35,14 @@ with surface as canvas:
 
     def draw_objects(self, element):
         self.draw_elements.append(element)
-        pass
-_scene = scene(1,1)
+
+the_scene = scene (500,250)
 
 def take_screenshot():
     '''
     renders all elements to scene
-
     '''
-    for draw_objects in _scene.draw_elements:
+    for draw_objects in the_scene.draw_elements:
         draw_objects.show()
     screenshot = surface.makeImageSnapshot()
 
@@ -85,21 +83,6 @@ def get_paint_polygon(color):
     )
     return paint
 
-def get_paint_path(color,linewidth):
-    '''
-    Returns skia.paint object for paths (lines etc)
-    '''
-    rgb = get_rgb(color)
-    color = Color=skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
-    paint = skia.Paint(
-        AntiAlias=True,
-        Style=skia.Paint.kStroke_Style,
-        StrokeWidth=linewidth,
-        Color=color,
-        StrokeCap=skia.Paint.kRound_Cap,
-    )
-    return paint
-
 
 class polygon:
     def __init__(self,x,y,**kwargs):
@@ -107,7 +90,7 @@ class polygon:
         self.y = y
         self.color = kwargs.get('color', '#000000')
         self.paint = get_paint_polygon(self.color)
-        _scene.draw_objects(self)
+        the_scene.draw_objects(self)
 
     def show(self):
         with surface as canvas:
@@ -140,6 +123,24 @@ class text(polygon):
     def draw(self):
         canvas.drawTextBlob(self.blob, self.x, self.y, self.paint)
 
+
+
+def get_paint_path(color,linewidth):
+    '''
+    Returns skia.paint object for paths (lines etc)
+    '''
+    rgb = get_rgb(color)
+    color = Color=skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
+    paint = skia.Paint(
+        AntiAlias=True,
+        Style=skia.Paint.kStroke_Style,
+        StrokeWidth=linewidth,
+        Color=color,
+        StrokeCap=skia.Paint.kRound_Cap,
+    )
+    return paint
+
+
 class path:
     def __init__(self,x,y,**kwargs):
         self.x = x
@@ -147,7 +148,7 @@ class path:
         self.color = kwargs.get('color', '#000000')
         self.linewidth = kwargs.get('linewidth', 4)
         self.paint = get_paint_path(self.color,self.linewidth)
-        _scene.draw_objects(self)
+        the_scene.draw_objects(self)
 
     def show(self):
         with surface as canvas:
@@ -171,7 +172,7 @@ def animate(frames):
     global frame
     frame = 0
     while frame < frames:
-        _scene.reset()
+        the_scene.reset()
         animation()
 
         save("test/"+str(frame)+".png")

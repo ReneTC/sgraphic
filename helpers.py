@@ -1,5 +1,5 @@
 from PIL import ImageColor # convert hex to rgb
-from .main import *
+
 
 def get_rgb(hex):
     '''
