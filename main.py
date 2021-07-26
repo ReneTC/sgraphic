@@ -7,7 +7,7 @@ from .helpers import *
 
 #pdoc -o ./docs ./main.py --force
 
-class scene:
+class make_scene:
     '''
     A class to represent the scene.
     '''
@@ -18,34 +18,47 @@ class scene:
         self.color = kwargs.get('color', '#ffffff')
         self.rgb = get_rgb(self.color)
         self.draw_elements = []
-        self.code ='''
-width, height = '''+str(self.width)+''',  '''+str(self.height)+'''
-surface = skia.Surface(width, height)
-with surface as canvas:
-    canvas.clear(skia.ColorSetRGB('''+str(self.rgb[0])+''','''+str(self.rgb[1])+''', '''+str(self.rgb[2])+'''))'''
+
 
         self.reset()
-        # global _scene
+        # global the_scene
 
     def reset(self):
         '''
         Resets all elements to initial scene.
         '''
+        self.code ='''
+width, height = '''+str(self.width)+''',  '''+str(self.height)+'''
+surface = skia.Surface(width, height)
+with surface as canvas:
+    canvas.translate('''+str(self.width/2)+''', '''+str(self.height/2)+''')
+    canvas.clear(skia.ColorSetRGB('''+str(self.rgb[0])+''','''+str(self.rgb[1])+''', '''+str(self.rgb[2])+'''))'''
         exec(self.code, globals())
 
     def draw_objects(self, element):
         self.draw_elements.append(element)
 
-the_scene = scene (500,250)
+def scene(width,height):
+    '''
+    updates scene without makeing new class instance
+    '''
+    the_scene.width = width
+    the_scene.height = height
+    the_scene.draw_elements = []
+    the_scene.reset()
+
+# make the one scene a global variable
+the_scene = make_scene(500,250)
 
 def take_screenshot():
     '''
     renders all elements to scene
     '''
-    for draw_objects in the_scene.draw_elements:
-        draw_objects.show()
+    with surface as canvas:
+        for draw_objects in the_scene.draw_elements:
+            draw_objects.show()
     screenshot = surface.makeImageSnapshot()
-
+    the_scene.reset()
     return screenshot
 
 def show(inline=False):
@@ -93,8 +106,7 @@ class polygon:
         the_scene.draw_objects(self)
 
     def show(self):
-        with surface as canvas:
-            self.draw()
+        self.draw()
 
 class cube(polygon):
     def __init__(self, x, y,width, height, **kwargs):
@@ -103,7 +115,7 @@ class cube(polygon):
         self.height = height
 
     def draw(self):
-        canvas.drawRect(skia.Rect.MakeXYWH(self.x, self.y, self.width, self.height), self.paint)
+        canvas.drawRect(skia.Rect.MakeXYWH(self.x, -self.y, self.width, self.height), self.paint)
 
 class circle(polygon):
     def __init__(self, x, y, radius, **kwargs):
@@ -111,17 +123,28 @@ class circle(polygon):
         self.radius = radius
 
     def draw(self):
-        canvas.drawCircle(self.x,self.y, self.radius, self.paint)
+        canvas.drawCircle(self.x,-self.y, self.radius, self.paint)
 
 class text(polygon):
     def __init__(self, x, y, message, **kwargs):
         super().__init__(x, y, **kwargs)
         self.message = message
-        self.font_size = kwargs.get('font_size', 36)
-        self.blob = skia.TextBlob(self.message, skia.Font(None, self.font_size))
+        self.size = kwargs.get('size', 36)
+        self.font_type = kwargs.get('font', 'Arial')
+
+        # make custom ttf font and skia fonts
+        skia_font = None
+        if self.font_type.split('.')[-1] == 'ttf':
+            skia_font = skia.Typeface.MakeFromFile(self.font_type)
+        else:
+            print("what")
+            skia_font = skia.Typeface(self.font_type)
+        font = skia.Font(skia_font, self.size)
+
+        self.blob = skia.TextBlob(self.message, font)
 
     def draw(self):
-        canvas.drawTextBlob(self.blob, self.x, self.y, self.paint)
+        canvas.drawTextBlob(self.blob, self.x, -self.y, self.paint)
 
 
 
@@ -151,8 +174,7 @@ class path:
         the_scene.draw_objects(self)
 
     def show(self):
-        with surface as canvas:
-            self.draw()
+        self.draw()
 
 
 class line(path):
@@ -163,8 +185,8 @@ class line(path):
 
     def draw(self):
         path = skia.Path()
-        path.moveTo(self.x, self.y)
-        path.lineTo(self.x2, self.y2)
+        path.moveTo(self.x, -self.y)
+        path.lineTo(self.x2,-self.y2)
         path.close()
         canvas.drawPath(path, self.paint)
 
