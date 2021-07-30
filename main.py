@@ -56,11 +56,14 @@ the_scene = make_scene(500,250)
 def scale():
     with surface as canvas:
         canvas.scale(0.25,0.25)
+
 def push():
-    pass
+    with surface as canvas:
+        canvas.save()
 
 def pop():
-    pass
+    with surface as canvas:
+        canvas.restore()
 
 
 def take_screenshot():
@@ -93,34 +96,38 @@ def save(path):
     screenshot = take_screenshot()
     screenshot.save(path, skia.kPNG)
 
+def get_paint_polygon2(color):
+    '''
+    Returns a skia.paint object for polygons (cube, text etc)
+    '''
+    rgb = get_rgb(color)
+    color = skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
+    paint = skia.Paint(
+    AntiAlias=True,
+    Color=color,
+    Style=skia.Paint.kFill_Style,
+    )
+    return paint
 
 
 class image:
-    def __init__(self,x,y,widh,height,path,**kwargs):
+    def __init__(self,x,y,width,height,**kwargs):
         self.x = x
         self.y = y
-        self.path = path
-        self.paint = get_paint_image(self.path)
-        the_scene.draw_objects(self)
         self.width = width
         self.height = height
-
-    def draw(self):
-        canvas.drawRect(skia.Rect.MakeXYWH(self.x, -self.y, self.width, self.height), self.paint)
+        the_scene.draw_objects(self)
+        self.image = skia.Image.open('/home/renec/Drive/Higgsino/new_project/vid_files/2_mnist/src/images.png')
+        self.rect = skia.Rect(self.x, self.y,self.width,self.height)
+        self.paint = skia.Paint(
+                AntiAlias=True,
+        )
 
     def show(self):
         self.draw()
 
-def get_paint_image(path):
-    '''
-    Returns a skia.paint object for polygons (cube, text etc)
-    '''
-    image = skia.Image.open('image/path/image.png')
-    paint = skia.Paint(
-    AntiAlias=True,
-    ImageFilter=image,
-    )
-    return paint
+    def draw(self):
+        canvas.drawImageRect(self.image, self.rect, self.paint)
 
 def get_paint_polygon(color):
     '''
