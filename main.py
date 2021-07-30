@@ -2,6 +2,7 @@ import skia
 import contextlib
 from IPython.display import display
 from PIL import Image # show image in terminal
+import os
 
 from .helpers import *
 
@@ -37,7 +38,7 @@ with surface as canvas:
 
     def draw_objects(self, element):
         self.draw_elements.append(element)
-
+frames = 10
 def scene(width,height):
     '''
     updates scene without makeing new class instance
@@ -49,6 +50,18 @@ def scene(width,height):
 
 # make the one scene a global variable
 the_scene = make_scene(500,250)
+
+
+
+def scale():
+    with surface as canvas:
+        canvas.scale(0.25,0.25)
+def push():
+    pass
+
+def pop():
+    pass
+
 
 def take_screenshot():
     '''
@@ -77,22 +90,48 @@ def save(path):
     '''
     Saves the current scene as image.
     '''
-
     screenshot = take_screenshot()
-
     screenshot.save(path, skia.kPNG)
 
+
+
+class image:
+    def __init__(self,x,y,widh,height,path,**kwargs):
+        self.x = x
+        self.y = y
+        self.path = path
+        self.paint = get_paint_image(self.path)
+        the_scene.draw_objects(self)
+        self.width = width
+        self.height = height
+
+    def draw(self):
+        canvas.drawRect(skia.Rect.MakeXYWH(self.x, -self.y, self.width, self.height), self.paint)
+
+    def show(self):
+        self.draw()
+
+def get_paint_image(path):
+    '''
+    Returns a skia.paint object for polygons (cube, text etc)
+    '''
+    image = skia.Image.open('image/path/image.png')
+    paint = skia.Paint(
+    AntiAlias=True,
+    ImageFilter=image,
+    )
+    return paint
 
 def get_paint_polygon(color):
     '''
     Returns a skia.paint object for polygons (cube, text etc)
     '''
     rgb = get_rgb(color)
-    color = Color=skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
+    color = skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
     paint = skia.Paint(
-        AntiAlias=True,
-        Color=color,
-        Style=skia.Paint.kFill_Style,
+    AntiAlias=True,
+    Color=color,
+    Style=skia.Paint.kFill_Style,
     )
     return paint
 
@@ -115,7 +154,7 @@ class cube(polygon):
         self.height = height
 
     def draw(self):
-        canvas.drawRect(skia.Rect.MakeXYWH(self.x, -self.y, self.width, self.height), self.paint)
+        canvas.drawRect(skia.Rect.MakeXYWH(self.x, -self.y, self.width, -self.height), self.paint)
 
 class circle(polygon):
     def __init__(self, x, y, radius, **kwargs):
@@ -190,12 +229,38 @@ class line(path):
         path.close()
         canvas.drawPath(path, self.paint)
 
-def animate(frames):
+class circle_path(path):
+    def __init__(self, x, y, radius,**kwargs):
+        super().__init__(x, y, **kwargs)
+        self.radius = radius
+
+    def draw(self):
+        path = skia.Path()
+        path.addCircle(self.x, self.y, self.radius)
+        path.close()
+        canvas.drawPath(path, self.paint)
+
+class cube_path(path):
+    def __init__(self, x, y, width,height,**kwargs):
+        super().__init__(x, y, **kwargs)
+        self.width = width
+        self.height = height
+
+    def draw(self):
+        path = skia.Path()
+        path.addRect((self.x, self.y, self.width, self.height))
+        path.close()
+        canvas.drawPath(path, self.paint)
+
+animation_code = '''
+def animate():
     global frame
     frame = 0
     while frame < frames:
         the_scene.reset()
         animation()
-
-        save("test/"+str(frame)+".png")
+        save("animation/"+str(frame)+".png")
         frame += 1
+        print(frame)
+'''
+exec(animation_code)
