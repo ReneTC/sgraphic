@@ -17,6 +17,8 @@ class make_scene:
         self.width = width
         self.height = height
         self.color = kwargs.get('color', '#ffffff')
+        self.frames = kwargs.get('frames', 1)
+        self.frame = 0
         self.rgb = get_rgb(self.color)
         self.draw_elements = []
 
@@ -38,13 +40,16 @@ with surface as canvas:
 
     def draw_objects(self, element):
         self.draw_elements.append(element)
+
 frames = 10
-def scene(width,height):
+
+def scene(width,height,frames=1):
     '''
     updates scene without makeing new class instance
     '''
     the_scene.width = width
     the_scene.height = height
+    the_scene.frames = frames
     the_scene.draw_elements = []
     the_scene.reset()
 
@@ -53,17 +58,38 @@ the_scene = make_scene(500,250)
 
 
 
-def scale():
-    with surface as canvas:
-        canvas.scale(0.25,0.25)
+class translate:
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+        the_scene.draw_objects(self)
 
-def push():
-    with surface as canvas:
+    def draw(self):
+        canvas.translate(self.x,self.y)
+
+class scale:
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+        the_scene.draw_objects(self)
+
+    def draw(self):
+        canvas.scale(self.x,self.y)
+
+class push:
+    def __init__(self):
+        the_scene.draw_objects(self)
+
+    def draw(self):
         canvas.save()
 
-def pop():
-    with surface as canvas:
+class pop:
+    def __init__(self):
+        the_scene.draw_objects(self)
+
+    def draw(self):
         canvas.restore()
+
 
 
 def take_screenshot():
@@ -72,7 +98,7 @@ def take_screenshot():
     '''
     with surface as canvas:
         for draw_objects in the_scene.draw_elements:
-            draw_objects.show()
+            draw_objects.draw()
     screenshot = surface.makeImageSnapshot()
     the_scene.reset()
     return screenshot
@@ -96,40 +122,41 @@ def save(path):
     screenshot = take_screenshot()
     screenshot.save(path, skia.kPNG)
 
-def get_paint_polygon2(color):
+def saver(frame,filename=None):
     '''
-    Returns a skia.paint object for polygons (cube, text etc)
+    saves all frames. in same directory as callign file. filename/filename0001.png
     '''
-    rgb = get_rgb(color)
-    color = skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
-    paint = skia.Paint(
-    AntiAlias=True,
-    Color=color,
-    Style=skia.Paint.kFill_Style,
-    )
-    return paint
+    import pathlib
+    from sys import argv
+    import os
+    if filename == None:
+        filename = os.path.basename(os.path.splitext(argv[0])[0])
+    path = pathlib.Path().absolute()
+    isfile = os.path.join(path,filename)
+
+    if not os.path.exists(isfile):
+        os.makedirs(isfile)
+
+    save(os.path.join(path,filename,str(filename) + str(frame).zfill(3) + ".png"))
 
 
 class image:
-    def __init__(self,x,y,width,height,**kwargs):
+    def __init__(self,x,y,path,**kwargs):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+        self.image = skia.Image.open(path)
+        self.width = self.image.width()
+        self.height = self.image.height()
         the_scene.draw_objects(self)
-        self.image = skia.Image.open('/home/renec/Drive/Higgsino/new_project/vid_files/2_mnist/src/images.png')
-        self.rect = skia.Rect(self.x, self.y,self.width,self.height)
+        self.rect = skia.Rect(0, 0,0,0).MakeXYWH(self.x,-self.y,self.width,self.height)
         self.paint = skia.Paint(
                 AntiAlias=True,
         )
 
-    def show(self):
-        self.draw()
-
     def draw(self):
         canvas.drawImageRect(self.image, self.rect, self.paint)
 
-def get_paint_polygon(color):
+def get_paint_polygon(color,alpha):
     '''
     Returns a skia.paint object for polygons (cube, text etc)
     '''
@@ -139,6 +166,7 @@ def get_paint_polygon(color):
     AntiAlias=True,
     Color=color,
     Style=skia.Paint.kFill_Style,
+    Alphaf=alpha
     )
     return paint
 
@@ -148,11 +176,10 @@ class polygon:
         self.x = x
         self.y = y
         self.color = kwargs.get('color', '#000000')
-        self.paint = get_paint_polygon(self.color)
+        self.alpha = kwargs.get('alpha', 1.0)
+        self.paint = get_paint_polygon(self.color,self.alpha)
         the_scene.draw_objects(self)
 
-    def show(self):
-        self.draw()
 
 class cube(polygon):
     def __init__(self, x, y,width, height, **kwargs):
@@ -183,7 +210,6 @@ class text(polygon):
         if self.font_type.split('.')[-1] == 'ttf':
             skia_font = skia.Typeface.MakeFromFile(self.font_type)
         else:
-            print("what")
             skia_font = skia.Typeface(self.font_type)
         font = skia.Font(skia_font, self.size)
 
@@ -218,9 +244,6 @@ class path:
         self.linewidth = kwargs.get('linewidth', 4)
         self.paint = get_paint_path(self.color,self.linewidth)
         the_scene.draw_objects(self)
-
-    def show(self):
-        self.draw()
 
 
 class line(path):
@@ -259,15 +282,7 @@ class cube_path(path):
         path.close()
         canvas.drawPath(path, self.paint)
 
-animation_code = '''
-def animate():
-    global frame
-    frame = 0
-    while frame < frames:
-        the_scene.reset()
-        animation()
-        save("animation/"+str(frame)+".png")
-        frame += 1
-        print(frame)
-'''
-exec(animation_code)
+
+def grid():
+    line(0,the_scene.height,0,-the_scene.height)
+    line(-the_scene.width,0,the_scene.height,0)
