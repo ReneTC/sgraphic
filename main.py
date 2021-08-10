@@ -67,6 +67,14 @@ class translate:
     def draw(self):
         canvas.translate(self.x,self.y)
 
+class rotate:
+    def __init__(self,angle):
+        self.angle = angle
+        the_scene.draw_objects(self)
+
+    def draw(self):
+        canvas.rotate(self.angle)
+
 class scale:
     def __init__(self,x,y):
         self.x = x
@@ -145,16 +153,36 @@ class image:
         self.x = x
         self.y = y
         self.image = skia.Image.open(path)
-        self.width = self.image.width()
-        self.height = self.image.height()
+        self.alpha = kwargs.get('alpha', 1.0)
+        self.width = kwargs.get('width', self.image.width())
+        self.height = kwargs.get('height', self.image.height())
         the_scene.draw_objects(self)
         self.rect = skia.Rect(0, 0,0,0).MakeXYWH(self.x,-self.y,self.width,self.height)
         self.paint = skia.Paint(
                 AntiAlias=True,
+                Alphaf=self.alpha
         )
 
     def draw(self):
         canvas.drawImageRect(self.image, self.rect, self.paint)
+
+class vertices:
+    def __init__(self,points,**kwargs):
+        self.points = points
+
+        self.color = kwargs.get('color', '#000000')
+        self.alpha = kwargs.get('alpha', 1.0)
+
+        self.paint = get_paint_polygon(self.color,self.alpha)
+        the_scene.draw_objects(self)
+
+        self.skia_points = []
+        for p in self.points:
+            self.skia_points.append(skia.Point(p[0], - p[1]))
+
+    def draw(self):
+        canvas.drawVertices(skia.Vertices(skia.Vertices.kTriangles_VertexMode,self.skia_points),self.paint)
+
 
 def get_paint_polygon(color,alpha):
     '''
@@ -278,7 +306,7 @@ class cube_path(path):
 
     def draw(self):
         path = skia.Path()
-        path.addRect((self.x, self.y, self.width, self.height))
+        path.addRect((self.x, -self.y, self.width, self.height))
         path.close()
         canvas.drawPath(path, self.paint)
 

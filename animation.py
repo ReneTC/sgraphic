@@ -1,7 +1,7 @@
 from easing_functions import *
 import numpy as np
 from .main import the_scene
-
+from .helpers import *
 def interpolate(start_val,end_val,when_frame,duration = 20):
     '''
     returns only 1 value at a time
@@ -13,6 +13,31 @@ def interpolate(start_val,end_val,when_frame,duration = 20):
     elif frame < when_frame + duration:
         a = ExponentialEaseInOut(start=start_val, end=end_val, duration=duration)
         return a.ease(frame-when_frame)
+
+    else:
+        return end_val
+
+def interpolate_color(start_val,end_val,when_frame,duration = 20):
+    '''
+    returns only 1 value at a time
+    '''
+    frame = the_scene.frame
+
+    r1, g1, b1 = get_rgb(start_val)
+    r2, g2, b2 = get_rgb(end_val)
+
+    if frame < when_frame:
+        return start_val
+
+    elif frame < when_frame + duration:
+        r = ExponentialEaseInOut(start=r1, end=r2, duration=duration)
+        g = ExponentialEaseInOut(start=g1, end=g2, duration=duration)
+        b = ExponentialEaseInOut(start=b1, end=b2, duration=duration)
+        r_f = int(r.ease(frame-when_frame))
+        r_g = int(g.ease(frame-when_frame))
+        r_b = int(b.ease(frame-when_frame))
+
+        return get_hex((r_f,r_g,r_b))
 
     else:
         return end_val
