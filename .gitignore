@@ -1,2 +1,5 @@
 #ignore these folders
-__pycache__/
+dist/
+build/
+sgraphic.egg-info/
+notes.md

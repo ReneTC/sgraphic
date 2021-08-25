@@ -1,4 +1,4 @@
-# SG - simple graphics
+# Sgraphic - Simple graphic
 ### Very simple 2d graphics package
 Basically just a wrapper of the brilliant [skia python](https://github.com/kyamagu/skia-python) package.
 This package exist because i needed a simple 2d graphic plotter with ipython support and matplotlib inspired syntax.
