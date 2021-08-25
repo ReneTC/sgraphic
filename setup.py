@@ -10,4 +10,12 @@ setup(
     license = "BSD",
     keywords = "graphics package 2d",
     packages=['sgraphic'],
+    install_requires=[
+   'skia-python',
+   'IPython',
+   'PIL',
+   'numpy',
+   'easing-functions'
+
+]
 )
