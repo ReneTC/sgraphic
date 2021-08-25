@@ -79,6 +79,11 @@ def boolean_pulse(period,frame,offset=0,on_val = 1, off_val = 0):
 
 
 animation_code = '''
+def show_animation(inline=False,frame = 0):
+    animation()
+    the_scene.frame = frame
+    show(inline)
+
 def animate(filename=None):
     while the_scene.frame < the_scene.frames:
         global frame

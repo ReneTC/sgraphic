@@ -16,4 +16,13 @@ Does not support interaction or 3d.
 ![simple graphics exaple](img/example.png)
 
 ## Documentation
-[Can be found here](https://renetc.github.io/Simple-graphics/)
+[Will be released later here](https://renetc.github.io/Simple-graphics/)
+
+<!--
+
+medium
+https://thucnc.medium.com/how-to-publish-your-own-python-package-to-pypi-4318868210f9
+
+update
+https://stackoverflow.com/questions/57411888/how-to-update-pip-package
+-->

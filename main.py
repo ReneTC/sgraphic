@@ -18,10 +18,11 @@ class make_scene:
         self.height = height
         self.color = kwargs.get('color', '#ffffff')
         self.frames = kwargs.get('frames', 1)
+        self.alpha = kwargs.get('alpha', 255)
         self.frame = 0
         self.rgb = get_rgb(self.color)
         self.draw_elements = []
-
+        self.alpha = 0
 
         self.reset()
         # global the_scene
@@ -35,7 +36,7 @@ width, height = '''+str(self.width)+''',  '''+str(self.height)+'''
 surface = skia.Surface(width, height)
 with surface as canvas:
     canvas.translate('''+str(self.width/2)+''', '''+str(self.height/2)+''')
-    canvas.clear(skia.ColorSetRGB('''+str(self.rgb[0])+''','''+str(self.rgb[1])+''', '''+str(self.rgb[2])+'''))'''
+    canvas.clear(skia.ColorSetARGB('''+str(self.alpha)+''','''+str(self.rgb[0])+''','''+str(self.rgb[1])+''', '''+str(self.rgb[2])+'''))'''
         exec(self.code, globals())
 
     def draw_objects(self, element):
@@ -43,13 +44,14 @@ with surface as canvas:
 
 frames = 10
 
-def scene(width,height,frames=1):
+def scene(width,height,frames=1,alpha=255):
     '''
     updates scene without makeing new class instance
     '''
     the_scene.width = width
     the_scene.height = height
     the_scene.frames = frames
+    the_scene.alpha = alpha
     the_scene.draw_elements = []
     the_scene.reset()
 
@@ -306,7 +308,7 @@ class cube_path(path):
 
     def draw(self):
         path = skia.Path()
-        path.addRect((self.x, -self.y, self.width, self.height))
+        path.addRect((self.x, -self.y, self.width, -self.height))
         path.close()
         canvas.drawPath(path, self.paint)
 
