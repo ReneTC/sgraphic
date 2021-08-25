@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = "sgraphic",
-    version = "0.0.3",
+    version = "0.0.4",
     author = "Rene Czepluch Thomsen",
     author_email = "sepluk1@gmail.com",
     description = ("Fast and simple graphics. "),
