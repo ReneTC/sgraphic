@@ -22,10 +22,7 @@ Run:
 
 
 ## Documentation
-[Will be released later here](https://renetc.github.io/Simple-graphics/)
-For now:
-
-Setup 
+[A beta documentation is available here](https://renetc.github.io/sgraphic/)
 
 ## Requires
 - python 3

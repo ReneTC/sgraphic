@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = "sgraphic",
-    version = "0.0.5",
+    version = "0.1.2",
     author = "Rene Czepluch Thomsen",
     author_email = "sepluk1@gmail.com",
     description = ("Fast and simple graphics. "),
@@ -13,7 +13,7 @@ setup(
     install_requires=[
    'skia-python',
    'IPython',
-   'PIL',
+   'Pillow',
    'numpy',
    'easing-functions'
 
