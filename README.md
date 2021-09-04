@@ -22,15 +22,15 @@ Run:
 
 
 ## Documentation
-[A beta documentation is available here](https://renetc.github.io/sgraphic/)
+[A beta documentation is available here](https://renetc.github.io/sgraphic/documentation/)
 
 ## Requires
-- python 3
-- skia-python
+- Python 3
+- Skia-python
 - IPython
-- PIL
-- numpy
-- easing-function
+- Pillow
+- Numpy
+- Easing-function
 
 <!--
 
