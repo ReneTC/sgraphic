@@ -16,7 +16,7 @@ Run:
 
 ``pip install sgraphic``
 
-## Comming:
+## Coming:
  - Animation support
  - Documentation
 
