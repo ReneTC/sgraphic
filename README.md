@@ -1,6 +1,6 @@
 # Sgraphic - Simple graphic
 
-![simple graphics exaple](https://raw.githubusercontent.com/ReneTC/sgraphic/main/img/example.png)
+![simple graphics exaple](img/example.png)
 
 ##  Very simple 2d graphics package
 Basically just a wrapper of the brilliant [skia python](https://github.com/kyamagu/skia-python) package.

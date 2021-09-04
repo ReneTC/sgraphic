@@ -4,7 +4,7 @@ title: Documentation
 permalink: /documentation/
 ---
 # Example
-<p align="center"><img src="img/example.png"></p>
+![simple graphics exaple](img/example.png)
 # General
 ### Scene
 A scene must be created to draw elements to.
