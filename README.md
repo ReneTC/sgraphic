@@ -40,7 +40,4 @@ https://thucnc.medium.com/how-to-publish-your-own-python-package-to-pypi-4318868
 update
 https://stackoverflow.com/questions/57411888/how-to-update-pip-package
 
-cp -a /home/renec/anaconda3/lib/python3.7/site-packages/sg/. /home/renec/Drive/Dokumenter/pip_sg/sgraphic
-
-
 -->
