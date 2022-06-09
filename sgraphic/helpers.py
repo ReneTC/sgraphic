@@ -1,4 +1,4 @@
-from PIL import ImageColor # convert hex to rgb
+from PIL import ImageColor
 
 
 def get_rgb(hex):

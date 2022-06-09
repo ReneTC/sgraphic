@@ -6,13 +6,11 @@ import os
 
 from .helpers import *
 
-#pdoc -o ./docs ./main.py --force
 
 class make_scene:
     '''
     A class to represent the scene.
     '''
-
     def __init__(self,width,height,**kwargs):
         self.width = width
         self.height = height
@@ -25,7 +23,6 @@ class make_scene:
         self.alpha = 0
 
         self.reset()
-        # global the_scene
 
     def reset(self):
         '''
@@ -48,6 +45,7 @@ def scene(width,height,frames=1,alpha=255):
     '''
     updates scene without makeing new class instance
     '''
+    # put global var the_scene here maybe?
     the_scene.width = width
     the_scene.height = height
     the_scene.frames = frames
@@ -57,9 +55,6 @@ def scene(width,height,frames=1,alpha=255):
 
 # make the one scene a global variable
 the_scene = make_scene(500,250)
-
-
-
 class translate:
     def __init__(self,x,y):
         self.x = x
@@ -67,7 +62,7 @@ class translate:
         the_scene.draw_objects(self)
 
     def draw(self):
-        canvas.translate(self.x,self.y)
+        canvas.translate(self.x,- self.y)
 
 class rotate:
     def __init__(self,angle):
@@ -100,8 +95,6 @@ class pop:
     def draw(self):
         canvas.restore()
 
-
-
 def take_screenshot():
     '''
     renders all elements to scene
@@ -118,7 +111,6 @@ def show(inline=False):
     Shows the scene with all elements drawn.
     '''
     screenshot = take_screenshot()
-
     if inline == False:
         img = Image.fromarray(screenshot)
         img.show()
@@ -168,151 +160,6 @@ class image:
     def draw(self):
         canvas.drawImageRect(self.image, self.rect, self.paint)
 
-class vertices:
-    def __init__(self,points,**kwargs):
-        self.points = points
-
-        self.color = kwargs.get('color', '#000000')
-        self.alpha = kwargs.get('alpha', 1.0)
-
-        self.paint = get_paint_polygon(self.color,self.alpha)
-        the_scene.draw_objects(self)
-
-        self.skia_points = []
-        for p in self.points:
-            self.skia_points.append(skia.Point(p[0], - p[1]))
-
-    def draw(self):
-        canvas.drawVertices(skia.Vertices(skia.Vertices.kTriangles_VertexMode,self.skia_points),self.paint)
-
-
-def get_paint_polygon(color,alpha):
-    '''
-    Returns a skia.paint object for polygons (cube, text etc)
-    '''
-    rgb = get_rgb(color)
-    color = skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
-    paint = skia.Paint(
-    AntiAlias=True,
-    Color=color,
-    Style=skia.Paint.kFill_Style,
-    Alphaf=alpha
-    )
-    return paint
-
-
-class polygon:
-    def __init__(self,x,y,**kwargs):
-        self.x = x
-        self.y = y
-        self.color = kwargs.get('color', '#000000')
-        self.alpha = kwargs.get('alpha', 1.0)
-        self.paint = get_paint_polygon(self.color,self.alpha)
-        the_scene.draw_objects(self)
-
-
-class cube(polygon):
-    def __init__(self, x, y,width, height, **kwargs):
-        super().__init__(x, y,**kwargs)
-        self.width = width
-        self.height = height
-
-    def draw(self):
-        canvas.drawRect(skia.Rect.MakeXYWH(self.x, -self.y, self.width, -self.height), self.paint)
-
-class circle(polygon):
-    def __init__(self, x, y, radius, **kwargs):
-        super().__init__(x, y, **kwargs)
-        self.radius = radius
-
-    def draw(self):
-        canvas.drawCircle(self.x,-self.y, self.radius, self.paint)
-
-class text(polygon):
-    def __init__(self, x, y, message, **kwargs):
-        super().__init__(x, y, **kwargs)
-        self.message = message
-        self.size = kwargs.get('size', 36)
-        self.font_type = kwargs.get('font', 'Arial')
-
-        # make custom ttf font and skia fonts
-        skia_font = None
-        if self.font_type.split('.')[-1] == 'ttf':
-            skia_font = skia.Typeface.MakeFromFile(self.font_type)
-        else:
-            skia_font = skia.Typeface(self.font_type)
-        font = skia.Font(skia_font, self.size)
-
-        self.blob = skia.TextBlob(self.message, font)
-
-    def draw(self):
-        canvas.drawTextBlob(self.blob, self.x, -self.y, self.paint)
-
-
-
-def get_paint_path(color,linewidth):
-    '''
-    Returns skia.paint object for paths (lines etc)
-    '''
-    rgb = get_rgb(color)
-    color = Color=skia.ColorSetRGB(rgb[0], rgb[1], rgb[2])
-    paint = skia.Paint(
-        AntiAlias=True,
-        Style=skia.Paint.kStroke_Style,
-        StrokeWidth=linewidth,
-        Color=color,
-        StrokeCap=skia.Paint.kRound_Cap,
-    )
-    return paint
-
-
-class path:
-    def __init__(self,x,y,**kwargs):
-        self.x = x
-        self.y = y
-        self.color = kwargs.get('color', '#000000')
-        self.linewidth = kwargs.get('linewidth', 4)
-        self.paint = get_paint_path(self.color,self.linewidth)
-        the_scene.draw_objects(self)
-
-
-class line(path):
-    def __init__(self, x, y, x2,y2,**kwargs):
-        super().__init__(x, y, **kwargs)
-        self.x2 = x2
-        self.y2 = y2
-
-    def draw(self):
-        path = skia.Path()
-        path.moveTo(self.x, -self.y)
-        path.lineTo(self.x2,-self.y2)
-        path.close()
-        canvas.drawPath(path, self.paint)
-
-class circle_path(path):
-    def __init__(self, x, y, radius,**kwargs):
-        super().__init__(x, y, **kwargs)
-        self.radius = radius
-
-    def draw(self):
-        path = skia.Path()
-        path.addCircle(self.x, self.y, self.radius)
-        path.close()
-        canvas.drawPath(path, self.paint)
-
-class cube_path(path):
-    def __init__(self, x, y, width,height,**kwargs):
-        super().__init__(x, y, **kwargs)
-        self.width = width
-        self.height = height
-
-    def draw(self):
-        path = skia.Path()
-        path.addRect((self.x, -self.y, self.width, -self.height))
-        path.close()
-        canvas.drawPath(path, self.paint)
-
-
-def grid():
-    line(0,the_scene.height,0,-the_scene.height)
-    line(-the_scene.width,0,the_scene.height,0)
+# load graphic elements
+exec(open(os.path.join(os.path.dirname(__file__), 'polygon.py')).read())
+exec(open(os.path.join(os.path.dirname(__file__), 'path.py')).read())
